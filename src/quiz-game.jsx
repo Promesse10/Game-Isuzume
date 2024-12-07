@@ -2,6 +2,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
+
+// Import assets
 import topGif from "./assets/Blue Pie Chart Presentation.gif"
 import Logo from "./assets/isuzume-official-logo.ebf1fb8ef1de35922f53 (1).png"
 import Money from "./assets/money.webp"
@@ -12,6 +14,7 @@ import park from "./assets/park.jpg"
 import roadpa from "./assets/road passing.png"
 import road from "./assets/road.png"
 import brake from "./assets/brake.jpg"
+
 const Alert = ({ message, type = 'info', language }) => {
   const translations = {
     success: {
@@ -34,7 +37,7 @@ const Alert = ({ message, type = 'info', language }) => {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
       className="fixed top-4 right-4 z-50"
-  >
+    >
       <div className="bg-white rounded-lg shadow-lg overflow-hidden max-w-md">
         <div className="bg-[#166d92] px-4 py-2 flex items-center justify-between">
           <span className="text-white font-semibold">
@@ -56,13 +59,13 @@ const GameRules = ({ prize, language, onConfirm, onClose }) => {
         "Answer 5 difficult questions about traffic laws",
         "You must get all questions correct to win",
         "Prize can be collected on Christmas Day",
-        "You have 3 minutes per question"
+        "You have 1 minute and 30 seconds per question"
       ],
       rw: [
         "Subiza ibibazo 5 bigoye ku mategeko y'umuhanda",
         "Ugomba gusubiza neza ibibazo byose kugira ngo utsinde",
         "Ibihembo bizatangwa ku munsi wa Noheli",
-        "Ufite iminota 3 kuri buri kibazo"
+        "Ufite iminota 1 n'amasegonda 30 kuri buri kibazo"
       ]
     },
     'Ten Exams': {
@@ -90,7 +93,11 @@ const GameRules = ({ prize, language, onConfirm, onClose }) => {
       ]
     }
   };
-  
+
+  if (!prize || !rules[prize]) {
+    console.error('Invalid prize selected:', prize);
+    return null;
+  }
 
   return (
     <div 
@@ -98,42 +105,53 @@ const GameRules = ({ prize, language, onConfirm, onClose }) => {
       onClick={onClose}
     >
      <motion.div
-  initial={{ opacity: 0 }}
-  animate={{ opacity: 1 }}
-  exit={{ opacity: 0 }}
-  className="bg-white rounded-lg shadow-xl max-w-md w-full p-6"
-  onClick={(e) => e.stopPropagation()}
->
-  <h2 className="text-2xl font-bold text-[#166d92] mb-4">
-    {language === 'en' ? 'Game Rules' : 'Amategeko y\'umukino'}
-  </h2>
-  <ul className="space-y-2 mb-6">
-    {rules[prize] && rules[prize][language].map((rule, index) => (
-      <li key={index} className="flex items-start">
-        <span className="text-[#166d92] mr-2">- </span>
-        {rule}
-      </li>
-    ))}
-  </ul>
-  {prize === 'T-Shirt' ? (
-    <a
-      href="https://www.isuzume.rw"
-      target="_blank"
-      rel="noopener noreferrer"
-      className="w-full bg-[#166d92] text-white py-2 px-4 rounded-lg hover:bg-[#166d92]/90 transition-colors inline-block text-center"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="bg-white rounded-lg shadow-xl max-w-md w-full p-6"
+      onClick={(e) => e.stopPropagation()}
     >
-      {language === 'en' ? 'Visit Our Website' : 'Sura Urubuga Rwacu'}
-    </a>
-  ) : (
-    <button
-      onClick={onConfirm}
-      className="w-full bg-[#166d92] text-white py-2 px-4 rounded-lg hover:bg-[#166d92]/90 transition-colors"
-    >
-      {language === 'en' ? 'I Understand' : 'Nabyumvise'}
-    </button>
-  )}
-</motion.div>
-
+      <h2 className="text-2xl font-bold text-[#166d92] mb-4">
+        {language === 'en' ? 'Game Rules' : 'Amategeko y\'umukino'}
+      </h2>
+      <div className="mb-6">
+        <h3 className="font-semibold mb-2">{language === 'en' ? 'English:' : 'Icyongereza:'}</h3>
+        <ul className="space-y-2 mb-4">
+          {rules[prize].en.map((rule, index) => (
+            <li key={index} className="flex items-start">
+              <span className="text-[#166d92] mr-2">- </span>
+              {rule}
+            </li>
+          ))}
+        </ul>
+        <h3 className="font-semibold mb-2">{language === 'en' ? 'Kinyarwanda:' : 'Ikinyarwanda:'}</h3>
+        <ul className="space-y-2">
+          {rules[prize].rw.map((rule, index) => (
+            <li key={index} className="flex items-start">
+              <span className="text-[#166d92] mr-2">- </span>
+              {rule}
+            </li>
+          ))}
+        </ul>
+      </div>
+      {prize === 'T-Shirt' ? (
+        <a
+          href="https://www.isuzume.rw"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="w-full bg-[#166d92] text-white py-2 px-4 rounded-lg hover:bg-[#166d92]/90 transition-colors inline-block text-center"
+        >
+          {language === 'en' ? 'Visit Our Website' : 'Sura Urubuga Rwacu'}
+        </a>
+      ) : (
+        <button
+          onClick={onConfirm}
+          className="w-full bg-[#166d92] text-white py-2 px-4 rounded-lg hover:bg-[#166d92]/90 transition-colors"
+        >
+          {language === 'en' ? 'I Understand' : 'Nabyumvise'}
+        </button>
+      )}
+    </motion.div>
     </div>
   );
 };
@@ -152,8 +170,8 @@ const LandingPage = ({ language, onStart }) => {
         backgroundPosition: 'center'
       }}
     >
-      <div className=" text-center text-white">
-   <h1 className='font-extrabold font mb-36'> ISUZUME GAME</h1>
+      <div className="text-center text-white">
+        <h1 className='font-extrabold font mb-36'> ISUZUME GAME</h1>
         <motion.button
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
@@ -219,7 +237,8 @@ const prizes = [
     },
     image:  Money,
     difficulty: 'hard',
-    questions: 5
+    questions: 5,
+    timePerQuestion: 90 // 1:30 in seconds
   },
   {
     id: 2,
@@ -229,7 +248,8 @@ const prizes = [
     },
     image: Test,
     difficulty: 'intermediate',
-    questions: 5
+    questions: 5,
+    timePerQuestion: 120 // 2 minutes in seconds
   },
   {
     id: 3,
@@ -237,138 +257,207 @@ const prizes = [
       en: 'T-Shirt',
       rw: 'T-Shirt'
     },
-    image: Tshirt ,
+    image: Tshirt,
     externalLink: 'https://www.isuzume.rw/more-exams'
   }
 ];
 
-const questions = [
-  {
-    image: road ,
-    question: {
-      en: "What does a broken line filled with white markers indicate?",
-      rw: "Umurongo uciyemo uduce umenyesha ahegereye umurongo ushobora kuzuzwa n'uturanga gukata tw'ibara ryera utwo turanga cyerekezo tumenyesha:"
+const questions = {
+  cashPrize: [
+    {
+      image: road,
+      question: {
+        en: "What does a broken line filled with white markers indicate?",
+        rw: "Umurongo uciyemo uduce umenyesha ahegereye umurongo ushobora kuzuzwa n'uturanga gukata tw'ibara ryera utwo turanga cyerekezo tumenyesha:"
+      },
+      options: {
+        en: [
+          "The lane drivers must follow",
+          "Approaching a continuous line",
+          "Reduction in the number of lanes in the direction of travel",
+          "Both A and C"
+        ],
+        rw: [
+          "Igisate cy'umuhanda abayobozi bagomba gukurikira",
+          "Ahegereye umurongo ukomeje",
+          "Igabanurwa ry'umubare w'ibisate by'umuhanda mu cyerekezo bajyamo",
+          "A na C nibyo"
+        ]
+      },
+      correctAnswer: {
+        en: "Both A and C",
+        rw: "A na C nibyo"
+      }
     },
-    options: {
-      en: [
-        "The lane drivers must follow",
-        "Approaching a continuous line",
-        "Reduction in the number of lanes in the direction of travel",
-        "Both A and C"
-      ],
-      rw: [
-        "Igisate cy'umuhanda abayobozi bagomba gukurikira",
-        "Ahegereye umurongo ukomeje",
-        "Igabanurwa ry'umubare w'ibisate by'umuhanda mu cyerekezo bajyamo",
-        "A na C nibyo"
-      ]
+    {
+      image: undefined,
+      question: {
+        en: "What is the speed limit for motorcycles when no specific restriction is applied?",
+        rw: "Iyo nta mategeko awugabanya by'umwihariko, umuvuduko ntarengwa w'amapikipiki ni:"
+      },
+      options: {
+        en: ["25 km/h", "70 km/h", "40 km/h", "None of the above"],
+        rw: ["Km 25", "Km 70", "Km 40", "Nta gisubizo cy'ukuri kirimo"]
+      },
+      correctAnswer: {
+        en: "70 km/h",
+        rw: "Km 70"
+      }
     },
-    correctAnswer: {
-      en: "Both A and C",
-      rw: "A na C nibyo"
+    {
+      image: undefined,
+      question: {
+        en: "Where is it prohibited to overtake vehicles, except two-wheeled ones?",
+        rw: "Kunyura ku binyabiziga bindi, uretse icy'ibiziga bibiri, bibujijwe aha hakurikira:"
+      },
+      options: {
+        en: [
+          "Near a bridge where the road is narrow",
+          "Near pedestrian crossings",
+          "Near poorly maintained road sections",
+          "All of the above"
+        ],
+        rw: [
+          "Hafi y'iteme iyo hari umuhanda ufunganye",
+          "Hafi y'aho abanyamaguru banyura",
+          "Hafi y'ibice by'umuhanda bimeze nabi",
+          "Ibi bisubizo byose ni ukuri"
+        ]
+      },
+      correctAnswer: {
+        en: "All of the above",
+        rw: "Ibi bisubizo byose ni ukuri"
+      }
+    },
+    {
+      image: undefined,
+      question: {
+        en: "What is the purpose of a continuous white line on the road?",
+        rw: "Umurongo mugari wera udacagaguye ugaragaza iki?"
+      },
+      options: {
+        en: [
+          "The edge of the road",
+          "Reserved parking areas",
+          "Bike lanes",
+          "None of the above"
+        ],
+        rw: [
+          "Inkombe mpimbano z'umuhanda",
+          "Ahahagararwa umwanya muto n'umunini",
+          "Ahanyura abayobozi b'amagare",
+          "Nta gisubizo cy'ukuri kirimo"
+        ]
+      },
+      correctAnswer: {
+        en: "The edge of the road",
+        rw: "Inkombe mpimbano z'umuhanda"
+      }
+    },
+    {
+      image: undefined,
+      question: {
+        en: "What should drivers ensure before overtaking near a narrow bridge?",
+        rw: "Umuyobozi agomba gukora iki mbere yo kunyura hafi y'iteme riri mu muhanda ufunganye?"
+      },
+      options: {
+        en: [
+          "Maintain a safe distance",
+          "Use hazard lights",
+          "Reduce speed",
+          "All of the above"
+        ],
+        rw: [
+          "Gusiga intera ihagije",
+          "Koresha amatara ndanga",
+          "Kugabanya umuvuduko",
+          "Ibisubizo byose ni ukuri"
+        ]
+      },
+      correctAnswer: {
+        en: "All of the above",
+        rw: "Ibisubizo byose ni ukuri"
+      }
     }
-  },
-  {
-    image: park ,
-    question: {
-      en: "Where is it prohibited to park for a long time?",
-      rw: "Ikinyabiziga kibujijwe guhagarara akanya kanini aha hakurikira:"
+  ],
+  tenExams: [
+    {
+      image: undefined,
+      question: {
+        en: "What color is the traffic light that tells you to stop?",
+        rw: "Ni irihe bara ry'itara riguha uburenganzira bwo guhagarara?"
+      },
+      options: {
+        en: ["Green", "Yellow", "Red", "Blue"],
+        rw: ["Icyatsi", "Umuhondo", "Itukura", "Ubururu"]
+      },
+      correctAnswer: {
+        en: "Red",
+        rw: "Itukura"
+      }
     },
-    options: {
-      en: [
-        "Within 1 meter before or after a parked vehicle",
-        "Where there are specific prohibition signs",
-        "Where pedestrians cross the road to avoid an obstacle",
-        "All of the above"
-      ],
-      rw: [
-        "Ahatarengeje metero 1 imbere cyangwa inyuma y'ikinyabiziga gihagaze",
-        "Ahantu hari ibimenyetso bibuza byabugenewe",
-        "Aho abanyamaguru banyura mu muhanda ngo bakikire inkomyi",
-        "Ibisubizo byose nibyo"
-      ]
+    {
+      image: undefined,
+      question: {
+        en: "What should you do when you see a stop sign?",
+        rw: "Ugomba gukora iki iyo ubonye ikimenyetso kibuza gukomeza?"
+      },
+      options: {
+        en: ["Speed up", "Slow down and stop", "Ignore it", "Honk your horn"],
+        rw: ["Kwihuta", "Kugabanya umuvuduko no guhagarara", "Kutakitaho", "Gukoresha ihoni"]
+      },
+      correctAnswer: {
+        en: "Slow down and stop",
+        rw: "Kugabanya umuvuduko no guhagarara"
+      }
     },
-    correctAnswer: {
-      en: "All of the above",
-      rw: "Ibisubizo byose nibyo"
+    {
+      image: undefined,
+      question: {
+        en: "Which side of the road should you drive on in Rwanda?",
+        rw: "Ni ku ruhe ruhande rw'umuhanda ugomba gutwara ikinyabiziga mu Rwanda?"
+      },
+      options: {
+        en: ["Left side", "Right side", "Middle", "Any side"],
+        rw: ["Ibumoso", "Iburyo", "Hagati", "Uruhande urwo ari rwo rwose"]
+      },
+      correctAnswer: {
+        en: "Right side",
+        rw: "Iburyo"
+      }
+    },
+    {
+      image: undefined,
+      question: {
+        en: "What does a yellow traffic light mean?",
+        rw: "Itara ry'umuhondo rivuga iki?"
+      },
+      options: {
+        en: ["Go faster", "Stop", "Be prepared to stop", "Turn left"],
+        rw: ["Kwihuta", "Guhagarara", "Kwitegura guhagarara", "Kujya ibumoso"]
+      },
+      correctAnswer: {
+        en: "Be prepared to stop",
+        rw: "Kwitegura guhagarara"
+      }
+    },
+    {
+      image: undefined,
+      question: {
+        en: "What should you do when an ambulance with flashing lights approaches?",
+        rw: "Ugomba gukora iki iyo imbangukiragutse ifite amatara arimurika yegereye?"
+      },
+      options: {
+        en: ["Speed up", "Pull over and stop", "Ignore it", "Honk your horn"],
+        rw: ["Kwihuta", "Gusubira ku ruhande no guhagarara", "Kutayitaho", "Gukoresha ihoni"]
+      },
+      correctAnswer: {
+        en: "Pull over and stop",
+        rw: "Gusubira ku ruhande no guhagarara"
+      }
     }
-  },
-  {
-    image: moto,
-    question: {
-      en: "What is the maximum speed limit for motorcycles per hour when not specifically restricted?",
-      rw: "Iyo nta mategeko awugabanya by'umwihariko, umuvuduko ntarengwa w'amapikipiki mu isaha ni:"
-    },
-    options: {
-      en: [
-        "25 km/h",
-        "70 km/h",
-        "40 km/h",
-        "None of the above"
-      ],
-      rw: [
-        "Km 25",
-        "Km 70",
-        "Km 40",
-        "Nta gisubizo cy'ukuri kirimo"
-      ]
-    },
-    correctAnswer: {
-      en: "70 km/h",
-      rw: "Km 70"
-    }
-  },
-  {
-    image: brake ,
-    question: {
-      en: "What is the braking system used to slow down a vehicle when the main brake is not working properly called?",
-      rw: "Uburyo bukoreshwa kugirango ikinyabiziga kigende gahoro igihe feri idakora neza babwita:"
-    },
-    options: {
-      en: [
-        "Travel brake",
-        "Parking brake",
-        "Emergency brake",
-        "None of the above"
-      ],
-      rw: [
-        "Feri y'urugendo",
-        "Feri yo guhagarara umwanya munini",
-        "Feri yo gutabara",
-        "Nta gisubizo cy'ukuri kirimo"
-      ]
-    },
-    correctAnswer: {
-      en: "Emergency brake",
-      rw: "Feri yo gutabara"
-    }
-  },
-  {
-    image: roadpa,
-    question: {
-      en: "When is it prohibited to overtake other vehicles, except for two-wheeled vehicles?",
-      rw: "Kunyura ku binyabiziga bindi, uretse icy'ibiziga bibiri, bibujijwe aha hakurikira:"
-    },
-    options: {
-      en: [
-        "Near a bridge where the road is narrow",
-        "Near pedestrian crossings",
-        "Near poorly maintained road sections",
-        "All of the above"
-      ],
-      rw: [
-        "Hafi y'iteme iyo hari umuhanda ufunganye",
-        "Hafi y'aho abanyamaguru banyura",
-        "Hafi y'ibice by'umuhanda bimeze nabi",
-        "Ibi bisubizo byose ni ukuri"
-      ]
-    },
-    correctAnswer: {
-      en: "All of the above",
-      rw: "Ibi bisubizo byose ni ukuri"
-    }
-  }
-];
+  ]
+};
 
 const IsuzumeChristmasGame = () => {
   const [gameState, setGameState] = useState('landing');
@@ -385,9 +474,9 @@ const IsuzumeChristmasGame = () => {
   const [randomizedQuestions, setRandomizedQuestions] = useState([]);
   const [playerName, setPlayerName] = useState('');
   const [playerPhone, setPlayerPhone] = useState('+250');
+
   const handlePhoneChange = (e) => {
     const value = e.target.value;
-
     if (value.startsWith('+250') && value.length <= 13 && /^\+250\d{0,9}$/.test(value)) {
       setPlayerPhone(value);
     }
@@ -414,9 +503,10 @@ const IsuzumeChristmasGame = () => {
   };
 
   const randomizeQuestions = useCallback(() => {
-    const shuffled = [...questions].sort(() => 0.5 - Math.random());
+    const questionSet = selectedPrize.name.en === 'Cash Prize' ? questions.cashPrize : questions.tenExams;
+    const shuffled = [...questionSet].sort(() => 0.5 - Math.random());
     setRandomizedQuestions(shuffled.slice(0, 5));
-  }, []);
+  }, [selectedPrize]);
 
   const handlePrizeSelection = (prize) => {
     if (!playerName.trim() || !playerPhone.trim() || playerPhone === '+250') {
@@ -429,13 +519,13 @@ const IsuzumeChristmasGame = () => {
     }
     setSelectedPrize(prize);
     setShowRules(true);
-    randomizeQuestions();
   };
 
   const handleRulesConfirm = () => {
     setShowRules(false);
     setGameState('playing');
-    setTimeLeft(selectedPrize.difficulty === 'hard' ? 180 : 120);
+    setTimeLeft(selectedPrize.timePerQuestion);
+    randomizeQuestions();
     showNotification(
       language === 'en' 
         ? 'Game started! Good luck!' 
@@ -455,7 +545,7 @@ const IsuzumeChristmasGame = () => {
 
     if (currentQuestion + 1 < selectedPrize.questions) {
       setCurrentQuestion(currentQuestion + 1);
-      setTimeLeft(selectedPrize.difficulty === 'hard' ? 180 : 120);
+      setTimeLeft(selectedPrize.timePerQuestion);
     } else {
       setGameState('finished');
       setShowResults(true);
@@ -466,7 +556,7 @@ const IsuzumeChristmasGame = () => {
     if (currentQuestion + 1 < selectedPrize.questions) {
       setUserAnswers([...userAnswers, { question: currentQuestion, answer: null, isCorrect: false }]);
       setCurrentQuestion(currentQuestion + 1);
-      setTimeLeft(selectedPrize.difficulty === 'hard' ? 180 : 120);
+      setTimeLeft(selectedPrize.timePerQuestion);
     } else {
       setGameState('finished');
       setShowResults(true);
@@ -475,26 +565,26 @@ const IsuzumeChristmasGame = () => {
 
   const renderWelcome = () => (
     <div className="text-center">
-      <img src={Logo} alt="ISUZUME Logo" className="mx-auto mb-4 w-60" />
-      <h1 className="text-4xl font-bold mb-4">{translations.welcome.title[language]}</h1>
+      <img src={Logo} alt="ISUZUME Logo" className="mx-auto mb-4 w-40 md:w-60" />
+      <h1 className="text-2xl md:text-4xl font-bold mb-4">{translations.welcome.title[language]}</h1>
       <p className="mb-4">{translations.welcome.subtitle[language]}</p>
-      <div className="mb-4">
+      <div className="mb-4 flex flex-col md:flex-row justify-center items-center">
         <input
           type="text"
           value={playerName}
           onChange={(e) => setPlayerName(e.target.value)}
           placeholder={language === 'en' ? "Enter your name" : "Andika izina ryawe"}
-          className="mb-2 p-2 border rounded w-64 mr-3"
+          className="mb-2 md:mb-0 md:mr-3 p-2 border rounded w-full md:w-64"
           required
         />
-   <input
-      type="tel"
-      value={playerPhone}
-      onChange={handlePhoneChange}
-      placeholder={language === 'en' ? "Enter your phone number" : "Andika numero yawe ya telefone"}
-      className="p-2 border rounded w-64 "
-      required
-    />
+        <input
+          type="tel"
+          value={playerPhone}
+          onChange={handlePhoneChange}
+          placeholder={language === 'en' ? "Enter your phone number" : "Andika numero yawe ya telefone"}
+          className="p-2 border rounded w-full md:w-64"
+          required
+        />
       </div>
       <p className="mb-4">{translations.welcome.choosePrize[language]}</p>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -520,15 +610,15 @@ const IsuzumeChristmasGame = () => {
     const question = randomizedQuestions[currentQuestion];
     return (
       <div className="text-center">
-        <h2 className="text-2xl font-bold mb-4">Question {currentQuestion + 1}</h2>
-        <p className="text-xl mb-4">Time left: {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}</p>
-        <img src={question.image} alt={`Question ${currentQuestion + 1} image`} className="w-full h-64 object-cover mb-2 rounded" />
+        <h2 className="text-xl md:text-2xl font-bold mb-4">Question {currentQuestion + 1}</h2>
+        <p className="text-lg md:text-xl mb-4">Time left: {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}</p>
+        {question.image && <img src={question.image} alt={`Question ${currentQuestion + 1} image`} className="w-full h-48 md:h-64 object-cover mb-2 rounded" />}
         <p className="mb-4">{question.question[language]}</p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {question.options[language].map((option, index) => (
             <motion.button
               key={index}
-              className="bg-blue-500 text-white py-2 px-4 rounded-lg"
+              className="bg-blue-500 text-white py-2 px-4 rounded-lg text-sm md:text-base"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => handleAnswerSubmit(option)}
@@ -580,8 +670,6 @@ const IsuzumeChristmasGame = () => {
       </a>
     </div>
   );
-  
-  
 
   return (
     <DndProvider backend={HTML5Backend}>
@@ -599,7 +687,7 @@ const IsuzumeChristmasGame = () => {
         <AnimatePresence>
           {showRules && selectedPrize && (
             <GameRules
-              prize={selectedPrize.name[language]}
+              prize={selectedPrize.name.en}
               language={language}
               onConfirm={handleRulesConfirm}
               onClose={() => setShowRules(false)}
@@ -614,7 +702,7 @@ const IsuzumeChristmasGame = () => {
         </AnimatePresence>
 
         {gameState !== 'landing' && (
-          <div className="bg-white p-8 rounded-lg shadow-lg max-w-2xl w-full">
+          <div className="bg-white p-4 md:p-8 rounded-lg shadow-lg w-full max-w-2xl">
             <div className="mb-4 flex justify-end">
               <select
                 value={language}
